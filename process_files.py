@@ -12,7 +12,7 @@ def process_markup(image_folder, markup_path):
         markup_data = json.load(f)
         pic_markup = markup_data["_via_img_metadata"]
         for key in markup_data["_via_image_id_list"]:
-            img_path.append(image_folder + pic_markup[key]["filename"])
+            img_path.append(image_folder + '\\' +pic_markup[key]["filename"])
             doctype.append(markup_data["_via_settings"]["project"]["name"])
             #process template_quad
             curr_quad = []
