@@ -73,7 +73,4 @@ def process_sample(df, exe_path, bundle_path):
         "Processed Document Type": guessed_doctype, "Is rejected": rejected, "Confidence" : confidence, "Is processed" : is_processed})
     return res, total_unprocessed
 
-def process_result(res):
-    #build roc curve
-    return 0
 

@@ -1,8 +1,10 @@
+from ntpath import join
 import os
 import tqdm
 import pandas as pd
 import json
 import random
+
 
 def process_markup(image_folder, markup_path):
     img_path = []
@@ -23,6 +25,7 @@ def process_markup(image_folder, markup_path):
     res = pd.DataFrame({"Image path": img_path, "Document Type": doctype, "Template Quad": template_quad})
     return res
 
+
 def mix_markups(dataframes, img_count):
     img_path = []
     doctype = []
@@ -36,6 +39,11 @@ def mix_markups(dataframes, img_count):
     res = pd.DataFrame({"Image path": img_path, "Document Type": doctype, "Template Quad": template_quad})
     return res
 
+def join_dfs(markups):
+    res = pd.concat(markups, ignore_index=True)
+    return res
+
+
 def load_all_markups(lst_file):
     markups = []
     with open(lst_file) as f:
@@ -47,3 +55,8 @@ def load_all_markups(lst_file):
             markups.append(process_markup(line+"\\images\\" + i, line + "\\annotations\\" + j))
     return markups
 
+
+def get_data(lst_file):
+    markups = load_all_markups(lst_file)
+    res = join_dfs(markups)
+    return res
