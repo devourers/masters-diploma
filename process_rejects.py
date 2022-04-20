@@ -42,6 +42,6 @@ def get_fpr(result, thresh):
 
 def get_roc_curve(data, margin):
     points = []
-    for i in range(0, 100, margin*100):
+    for i in range(0, 100, int(margin*100)):
         points.append([get_tpr(data, i/100), get_fpr(data, i/100)])
     return points
