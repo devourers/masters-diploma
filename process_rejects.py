@@ -15,7 +15,7 @@ doctypes_vocab = {"alb.id.type1" : "alb_id",
 
 def match_doctypes(result, i):
     try:
-        if result["Document Type"][i] == doctypes_vocab[result["Processed Document Type"][i].split(":")[0]] and result["Document Type"][i] != "":
+        if result["Document Type"][i] == doctypes_vocab[result["Processed Document Type"][i]] and result["Document Type"][i] != "":
             return True
         else:
             return False
@@ -60,9 +60,9 @@ def get_tpr(result, thresh):
     total_p = 0
     total_tp = 0
     for i in range(len(result["Image path"])):
-        if match_doctypes(result, i):
+        if not match_doctypes(result, i):
             total_p += 1
-            if result["Confidence"][i] > thresh:
+            if result["Confidence"][i] < thresh:
                 total_tp += 1
     if total_p != 0:
         return total_tp / total_p
@@ -74,9 +74,9 @@ def get_fpr(result, thresh):
     total_n = 0
     total_fp = 0
     for i in range(len(result["Image path"])):
-        if not match_doctypes(result, i):
+        if match_doctypes(result, i):
             total_n += 1
-            if result["Confidence"][i] > thresh:
+            if result["Confidence"][i] < thresh:
                 total_fp += 1
     if total_n != 0:
         return total_fp / total_n
