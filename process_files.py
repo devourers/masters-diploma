@@ -4,6 +4,7 @@ import tqdm
 import pandas as pd
 import json
 import random
+import process_pictures
 
 
 def process_markup(image_folder, markup_path):
@@ -60,3 +61,34 @@ def get_data(lst_file):
     markups = load_all_markups(lst_file)
     res = join_dfs(markups)
     return res
+
+
+def copy_file(file):
+    temp_file_path = ""
+    with open("prefix.path") as prefix:
+        temp_file_path = prefix.readline().strip()
+    temp_file_path += "\\data\\temp\\temp.desc"
+    file_list = file.split('\\')
+    if "rus" in file_list[-2]:
+        return
+    file_desc_path = file_list[0] + '\\' + file_list[1] + '\\' + file_list[2] + '\\' + file_list[3] + "\\descriptors\\images\\" + file_list[-2] + "\\" + (file_list[-1].split('.')[0] + ".desc")
+    temp_f = open(file_desc_path, 'w')
+    temp_f.close()
+    with open(temp_file_path, 'rb') as r_f:
+        with open(file_desc_path, 'wb') as w_f:
+            byte = r_f.read(1)
+            while byte != b"":
+                w_f.write(byte)
+                byte = r_f.read(1)
+        w_f.close()
+    r_f.close()
+
+            
+
+def save_descs(config):
+    loaded_markups = get_data("folders.lst")
+    images = loaded_markups["Image path"]
+    for image in tqdm.tqdm(images):
+        process_pictures.process_picture(image, config)
+        copy_file(image)
+
