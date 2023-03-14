@@ -2,3 +2,4 @@ __pycache__
 *.lst
 *.path
 output.json
+python_env

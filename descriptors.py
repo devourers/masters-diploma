@@ -23,27 +23,23 @@ def keypoint_distance(keypoint1, keypoint2):
 def distance_matrix(keypoints1, keypoints2):
     res = [[0 for i in keypoints2] for j in keypoints1]
     #pool = Pool()
+    minimum = 128
+    i = 0
+    j = 0
     for id_1, keypoint1 in enumerate(keypoints1):
         #res[id_1] = pool.map(keypoint_distance_wrapper, [(keypoint1, keypoint2) for keypoint2 in keypoints2])
         for id_2, keypoint2 in enumerate(keypoints2):
             res[id_1][id_2] = keypoint_distance(keypoint1, keypoint2)
-    return res
+            if res[id_1][id_2] < minimum:
+                minimum = res[id_1][id_2]
+                i = id_1
+                j = id_2
+    return res, i, j
     
 def distance(keypoints1, keypoints2):
-    DM = distance_matrix(keypoints1, keypoints2)
+    DM, min_i, min_j = distance_matrix(keypoints1, keypoints2)
     n = len(DM)
-    if n == 0:
-        return -10
     m = len(DM[0])
-    minimum = DM[0][0]
-    min_i = 0
-    min_j = 0
-    for i in range(n):
-        for j in range(m):
-            if DM[i][j] < minimum:
-                minimum = DM[i][j]
-                min_i = i
-                min_j = j
     sup_x_xy = max(DM[min_i])
     DM_col = [DM[k][min_j] for k in range(n)]
     sup_y_xy = max(DM_col)
@@ -65,22 +61,22 @@ def load_keypoints(path):
 
 def load_templates(prefix):
     res = []
-    templates_path = prefix+"data\\descriptors\\templates"
+    templates_path = prefix+"data/descriptors/templates"
     dirs = os.listdir(templates_path)
     for tmp in dirs:
-        file = os.listdir( templates_path + "\\" + tmp)
-        descrs = load_keypoints(templates_path + "\\" + tmp + "\\" + file[0])
+        file = os.listdir( templates_path + "/" + tmp)
+        descrs = load_keypoints(templates_path + "/" + tmp + "/" + file[0])
         res.append([tmp, descrs])
     return res
 
 def load_files(prefix):
     res = []
-    files_path = prefix+"data\\descriptors\\images"
+    files_path = prefix+"data/descriptors/images"
     dirs = os.listdir(files_path)
     for dr in dirs:
-        files = os.listdir(files_path + "\\" + dr)
+        files = os.listdir(files_path + "/" + dr)
         for file in files:
-            descrs = load_keypoints(files_path + "\\" + dr + "\\" + file)
+            descrs = load_keypoints(files_path + "/" + dr + "/" + file)
             res.append([dr, file, descrs])
     return res
 
@@ -93,6 +89,10 @@ def distance_wrapper(item):
 
 def process_file(doc, name, decrs_file, templates):
     res = []
+    #pool = Pool()
+    #p_res = pool.map(distance_wrapper, [(decrs_file, template[0], template[1]) for template in templates])
+    #for r in p_res:
+    #    res.append([r[0], r[1]])
     for template in templates:
         template_name = template[0]
         decrs_template = template[1]
@@ -106,6 +106,10 @@ def process_file_wrapper(item):
     decrs_file = item[2]
     templates = item[3]
     return process_file(doc, name, decrs_file, templates)
+
+
+def prcoess_folder(prefix, folder):
+    return 0 #redo
 
 def process_files(prefix):
     res = dict()
